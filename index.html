@@ -4,7 +4,7 @@
 
     <head>
 
-        <title>to do list</title>
+        <title>Wheather App</title>
 
         <link rel="stylesheet" href="css/style.css">
 
@@ -12,12 +12,50 @@
     </head>
 
     <body>
-      <header>
-      </header>
+      <div class="wrapper">
+        <header><i class="bx bx-left-arrow-alt"></i>Whether App</header>
+        <section class="input-part">
+          <p class="info-txt">Please enter a valid city name</p>
+          <input type="text" class="text" placeholder="Enter city name" spellcheck="false" required>
+          <div class="separator"></div>
+          <button>Get Device Location</button>
+        </section>
+        <section class="weather-part">
+          <!-- <img src="icons/Weather Icons/cloud.svg" alt="Wheather icon"> -->
+          <div class="temp">
+            <span class="numb">13</span>
+            <span class="deg">°</span>С
+          </div>
+          <div class="weather">Broken Clouds</div>
+          <div class="location">
+            <i class="bx bx-map"></i>
+            <span>Kathmandu, Nepal</span>
+          </div>
+          <div class="bottom-details">
+            <div class="column feels">
+              <i class="bx bxs-thermometer"></i>
+              <div class="details">
+                <div class="temp">
+                  <span class="numb">17</span>
+                  <span class="deg">°</span>С
+                </div>
+                <p>Feels like</p>
+              </div>
+            </div>
+            <div class="column humidity">
+              <i class="bx bxs-droplet-half"></i>
+              <div class="details">
+                <div class="temp">
+                  <span class="numb">84%</span>
+                  <span class="deg">°</span>С
+                </div>
+                <p>Humidity</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <main>
-
-      </main>
+      </div>
 
       <script src="js/script.js"></script>
     </body>

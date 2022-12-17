@@ -21,6 +21,7 @@ body{
 .wrapper{
   width: 400px;
   background: #fff;
+  border-radius: 7px;
 
 }
 .wrapper header{
@@ -37,6 +38,11 @@ header i{
   cursor: pointer;
   margin-right: 8px;
 }
+
+.wrapper.active {
+  border-radius: 7px 0 0 7px;
+}
+
 .wrapper.active header i{
   margin-left: 5px;
   font-size: 30px;
@@ -207,18 +213,20 @@ header i{
   height: 500px;
   background: #fff;
   border-left: 1px solid #ccc;
+  border-radius: 0 7px 7px 0;
+  
   
   &__title{
     font-size: 21px;
     text-align: center;
-    margin: 10px 0 10px 0;
+    margin: 20px 0 0px 0;
   }
 
   &__days {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    justify-content:space-between;
+    justify-content:space-around;
   }
 
   &__day {
@@ -226,7 +234,15 @@ header i{
     display: flex;
     justify-content:space-between;
     align-items:center;
+    border-bottom: 1px solid #ccc;
+    flex-basis: 20%;
   }
+  &__day:last-child {
+    border-bottom: none;
+  }
+  // &__day:first-child{
+  //   border-top: 1px solid #ccc;
+  // }
 
   &__img {
     width: 50px;
@@ -234,6 +250,8 @@ header i{
   }
 
   &__description {
+    flex: 0 0 70px;
+    text-align: center;
   }
 
   &__temp {
@@ -259,5 +277,18 @@ header i{
 
 
 .weekWeather .active{
+
+}
+
+
+@media all and (max-width : 800px) {
+  .weekWeather {
+    border: none;
+    border-radius: 0 0 7px 7px;
+  }
+  .wrapper.active {
+    border-radius: 7px 7px 0 0;
+    border-bottom: 1px solid #ccc;
+  }
 
 }

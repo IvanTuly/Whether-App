@@ -28,6 +28,7 @@ body {
 .wrapper {
   width: 400px;
   background: #fff;
+  border-radius: 7px;
 }
 
 .wrapper header {
@@ -44,6 +45,10 @@ header i {
   font-size: 0em;
   cursor: pointer;
   margin-right: 8px;
+}
+
+.wrapper.active {
+  border-radius: 7px 0 0 7px;
 }
 
 .wrapper.active header i {
@@ -251,31 +256,52 @@ header i {
   height: 500px;
   background: #fff;
   border-left: 1px solid #ccc;
+  border-radius: 0 7px 7px 0;
 }
 .weekWeather__title {
   font-size: 21px;
   text-align: center;
-  margin: 10px 0 10px 0;
+  margin: 20px 0 0px 0;
 }
 .weekWeather__days {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 .weekWeather__day {
   padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #ccc;
+  flex-basis: 20%;
+}
+.weekWeather__day:last-child {
+  border-bottom: none;
 }
 .weekWeather__img {
   width: 50px;
   height: 50px;
+}
+.weekWeather__description {
+  flex: 0 0 70px;
+  text-align: center;
 }
 .weekWeather__feelsLike {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+@media all and (max-width: 800px) {
+  .weekWeather {
+    border: none;
+    border-radius: 0 0 7px 7px;
+  }
+  .wrapper.active {
+    border-radius: 7px 7px 0 0;
+    border-bottom: 1px solid #ccc;
+  }
 }/*# sourceMappingURL=style.css.map */

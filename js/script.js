@@ -4,11 +4,12 @@ infoTxt = inputPart.querySelector(".info-txt");
 inputField = inputPart.querySelector("input");
 locationBtn = inputPart.querySelector("button");
 wIcon = document.querySelector(".weather-part img");
-console.log(wIcon);
 arrowBack = wrapper.querySelector("header i");
 
-const apiKey = "ee7c4b79648c7ec65f4c16b0b11a0ffe";
+const apiKey = "9795ec7faf6e5a9e955e7f21ed6fcd6d";
+const newApi = "ee7c4b79648c7ec65f4c16b0b11a0ffe";
 let api;
+let apiWeek;
 
 
 inputField.addEventListener("keyup", e=>{
@@ -33,6 +34,7 @@ function onSuccess(position){
     //получение широты и долготы пользовательского девайса
     const {latitude, longitude} = position.coords;
     api = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+    apiWeek=`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
     fetchData();
 }
 
@@ -45,6 +47,8 @@ function onError(error){
 
 function requestApi(city){
     api =`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+                     
+    apiWeek=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`;
     fetchData();
 }
 
@@ -52,8 +56,32 @@ function fetchData(){
     console.log(api)
     infoTxt.innerText = "Getting weather details..."
     infoTxt.classList.add("pending");
+    //fetch(URL)-простой Get запрос - скачает содержимое по адресу URL
+    //responce.json - декодирует ответ в JSON
     fetch(api).then(response => response.json()).then(result => weatherDetails(result));
+    fetch(apiWeek).then(response => response.json()).then(result => weekWeather(result));
 }
+
+function weekWeather(info){
+    for (let i=0; i < info.list.length; i+=1){
+        //получает дату день.месяц
+        let date = info.list[i].dt_txt.slice(8, 10)+"."+info.list[i].dt_txt.slice(5, 7);
+        //получаем время
+        let time = info.list[i].dt_txt.slice(11);
+        
+        //погоду на следующие дни будем выводить по полудню
+        if(time=="12:00:00"){
+            const temp = Math.floor(info.list[i].main.temp);
+            const feels_like = Math.floor(info.list[i].main.feels_like);
+            const {description, id} = info.list[i].weather[0];
+            renderDay(date, id, description, temp, feels_like);
+        }
+    }
+    const weekWeather = document.querySelector(".weekWeather");
+    weekWeather.style.display="flex";
+    console.log(weekWeather);
+}
+
 
 function weatherDetails(info){
     infoTxt.classList.replace("pending", "error");
@@ -88,10 +116,46 @@ function weatherDetails(info){
 
         infoTxt.classList.remove("pending", "error");
         wrapper.classList.add("active");
-        console.log(info);
     }
 }
 
 arrowBack.addEventListener("click", ()=>{
     wrapper.classList.remove("active");
+    const weekWeather = document.querySelector(".weekWeather");
+    weekWeather.style.display="none";
+    const weekWeatherDays = document.querySelector(".weekWeather__days");
+    weekWeatherDays.innerHTML = '';
 })
+
+function renderDay(date, id, description, temp, feels_like){
+    
+    if(id == 800){
+        img = "icons/clear.svg";
+    }else if(id >= 200 && id <= 232){
+        img = "icons/storm.svg";  
+    }else if(id >= 600 && id <= 622){
+        img = "icons/snow.svg";
+    }else if(id >= 701 && id <= 781){
+        img = "icons/haze.svg";
+    }else if(id >= 801 && id <= 804){
+        img = "icons/cloud.svg";
+    }else if((id >= 500 && id <= 531) || (id >= 300 && id <= 321)){
+        img = "icons/rain.svg";
+    }
+
+    const HTML=    `
+        <div class="weekWeather__day">
+            <div class="date">${date}</div>
+            <img src=${img} alt="img" class="weekWeather__img">
+            <div class="weekWeather__description">${description}</div>
+            <div class="weekWeather__temp">${temp}°С</div>
+            <div class="weekWeather__feelsLike">
+                <div class="feelsLike__description">Feels like</div>
+                <div class="feelsLike__value">${feels_like}°С</div>
+            </div>
+        </div>`;
+
+  const parent = document.querySelector(".weekWeather__days");
+  parent.insertAdjacentHTML('beforeend', HTML);
+
+}

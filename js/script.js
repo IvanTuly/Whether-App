@@ -8,10 +8,8 @@ arrowBack = wrapper.querySelector("header i");
 
 const apiKey = "9795ec7faf6e5a9e955e7f21ed6fcd6d";
 const newApi = "ee7c4b79648c7ec65f4c16b0b11a0ffe";
-let api;
-let apiWeek;
 
-
+//нажатие кнопки enter
 inputField.addEventListener("keyup", e=>{
     //если пользователь нажмет enter в поле input и значение != ""
     if (e.key == "Enter" && inputField.value !=""){
@@ -19,6 +17,7 @@ inputField.addEventListener("keyup", e=>{
     }
 });
 
+//нажатие кнопки получить текущее местоположение
 locationBtn.addEventListener("click", ()=>{
     //если браузер поддерживает geolocation api
     if(navigator.geolocation){
@@ -28,6 +27,15 @@ locationBtn.addEventListener("click", ()=>{
         alert("Your browser not support geolocation api")
     }
 });
+
+//реализация нажатия по кнопке назад
+arrowBack.addEventListener("click", ()=>{
+    wrapper.classList.remove("active");
+    const weekWeather = document.querySelector(".weekWeather");
+    weekWeather.style.display="none";
+    const weekWeatherDays = document.querySelector(".weekWeather__days");
+    weekWeatherDays.innerHTML = '';
+})
 
 //получаем погоду через координаты пользователя
 function onSuccess(position){
@@ -44,16 +52,15 @@ function onError(error){
 
 }
 
-
+//получаем погоду через введенный город
 function requestApi(city){
-    api =`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
-                     
+    api =`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;          
     apiWeek=`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`;
     fetchData();
 }
 
+//обращение через api
 function fetchData(){
-    console.log(api)
     infoTxt.innerText = "Getting weather details..."
     infoTxt.classList.add("pending");
     //fetch(URL)-простой Get запрос - скачает содержимое по адресу URL
@@ -62,6 +69,31 @@ function fetchData(){
     fetch(apiWeek).then(response => response.json()).then(result => weekWeather(result));
 }
 
+//функция вывода погоды на сегодня
+function weatherDetails(info){
+    infoTxt.classList.replace("pending", "error");
+    if(info.cod == "404"){
+        infoTxt.innerText = `${inputField.value} isn't a valid city name`
+    } else{
+        const city = info.name;
+        const country = info.sys.country;
+        const {description, id} = info.weather[0];
+        const {feels_like, humidity, temp} = info.main;
+
+        wIcon.src = getImage(id);
+
+        wrapper.querySelector(".temp .numb").innerText = Math.floor(temp);
+        wrapper.querySelector(".weather").innerText =description;
+        wrapper.querySelector(".location span").innerText =`${city}, ${country}`;
+        wrapper.querySelector(".temp .numb-2").innerText =Math.floor(feels_like);
+        wrapper.querySelector(".humidity span").innerText =`${humidity}%`;
+
+        infoTxt.classList.remove("pending", "error");
+        wrapper.classList.add("active");
+    }
+}
+
+//функция вывода погоды на 5 дней вперед
 function weekWeather(info){
     for (let i=0; i < info.list.length; i+=1){
         //получает дату день.месяц
@@ -82,66 +114,9 @@ function weekWeather(info){
     console.log(weekWeather);
 }
 
-
-function weatherDetails(info){
-    infoTxt.classList.replace("pending", "error");
-    if(info.cod == "404"){
-        infoTxt.innerText = `${inputField.value} isn't a valid city name`
-    } else{
-        const city = info.name;
-        const country = info.sys.country;
-        const {description, id} = info.weather[0];
-        const {feels_like, humidity, temp} = info.main;
-
-        if(id == 800){
-            wIcon.src = "icons/clear.svg";
-        }else if(id >= 200 && id <= 232){
-            wIcon.src = "icons/storm.svg";  
-        }else if(id >= 600 && id <= 622){
-            wIcon.src = "icons/snow.svg";
-        }else if(id >= 701 && id <= 781){
-            wIcon.src = "icons/haze.svg";
-        }else if(id >= 801 && id <= 804){
-            wIcon.src = "icons/cloud.svg";
-        }else if((id >= 500 && id <= 531) || (id >= 300 && id <= 321)){
-            wIcon.src = "icons/rain.svg";
-        }
-
-        wrapper.querySelector(".temp .numb").innerText = Math.floor(temp);
-        wrapper.querySelector(".weather").innerText =description;
-        wrapper.querySelector(".location span").innerText =`${city}, ${country}`;
-        wrapper.querySelector(".temp .numb-2").innerText =Math.floor(feels_like);
-        wrapper.querySelector(".humidity span").innerText =`${humidity}%`;
-
-
-        infoTxt.classList.remove("pending", "error");
-        wrapper.classList.add("active");
-    }
-}
-
-arrowBack.addEventListener("click", ()=>{
-    wrapper.classList.remove("active");
-    const weekWeather = document.querySelector(".weekWeather");
-    weekWeather.style.display="none";
-    const weekWeatherDays = document.querySelector(".weekWeather__days");
-    weekWeatherDays.innerHTML = '';
-})
-
+//функция ренедеринга погоды на 5 дней
 function renderDay(date, id, description, temp, feels_like){
-    
-    if(id == 800){
-        img = "icons/clear.svg";
-    }else if(id >= 200 && id <= 232){
-        img = "icons/storm.svg";  
-    }else if(id >= 600 && id <= 622){
-        img = "icons/snow.svg";
-    }else if(id >= 701 && id <= 781){
-        img = "icons/haze.svg";
-    }else if(id >= 801 && id <= 804){
-        img = "icons/cloud.svg";
-    }else if((id >= 500 && id <= 531) || (id >= 300 && id <= 321)){
-        img = "icons/rain.svg";
-    }
+    const img = getImage(id);
 
     const HTML=    `
         <div class="weekWeather__day">
@@ -158,4 +133,23 @@ function renderDay(date, id, description, temp, feels_like){
   const parent = document.querySelector(".weekWeather__days");
   parent.insertAdjacentHTML('beforeend', HTML);
 
+}
+
+//функция получения картинки по id погоды
+function getImage(id){
+    let img =""
+    if(id == 800){
+        img = "icons/clear.svg";
+    }else if(id >= 200 && id <= 232){
+        img = "icons/storm.svg";  
+    }else if(id >= 600 && id <= 622){
+        img = "icons/snow.svg";
+    }else if(id >= 701 && id <= 781){
+        img = "icons/haze.svg";
+    }else if(id >= 801 && id <= 804){
+        img = "icons/cloud.svg";
+    }else if((id >= 500 && id <= 531) || (id >= 300 && id <= 321)){
+        img = "icons/rain.svg";
+    }
+    return img
 }
